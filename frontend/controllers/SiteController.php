@@ -79,29 +79,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Logs in a user.
-     *
-     * @return mixed
-     */
-    public function actionLogin()
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-
-        return $this->render('login', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
      * Logs out the current user.
      *
      * @return mixed
@@ -220,7 +197,7 @@ class SiteController extends Controller
      * @throws BadRequestHttpException
      * @return yii\web\Response
      */
-    public function actionVerifyEmail($token)
+    public function actionVerifyEmail($token): Yii\web\Response //Действие по проверке электронной почты
     {
         try {
             $model = new VerifyEmailForm($token);
@@ -241,7 +218,7 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionResendVerificationEmail()
+    public function actionResendVerificationEmail() //Повторная отправка подтверждающего сообщения электронной почты
     {
         $model = new ResendVerificationEmailForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {

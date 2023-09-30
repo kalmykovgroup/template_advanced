@@ -4,23 +4,18 @@ namespace frontend\assets;
 
 use yii\web\AssetBundle;
 
-/**
- * Main frontend application asset bundle.
- */
-class AppAsset extends AssetBundle
+class AuthAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        'css/site.css',
+        'css/auth/login.css',
     ];
     public $js = [
-        'js/jquery.cookie.js',
-        'js/site.js',
-
+        'js/auth/login.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',
-        'yii\bootstrap5\BootstrapAsset',
+        'yii\bootstrap5\BootstrapAsset'
     ];
 }

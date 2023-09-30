@@ -12,11 +12,13 @@ use yii\web\IdentityInterface;
  * User model
  *
  * @property integer $id
- * @property string $username
+ * @property string $name
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $verification_token
  * @property string $email
+ * @property string $phone
+ * @property string $login
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
@@ -70,7 +72,7 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public static function findIdentityByAccessToken($token, $type = null): ?IdentityInterface
     {
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
     }
@@ -79,11 +81,11 @@ class User extends ActiveRecord implements IdentityInterface
      * Finds user by username
      *
      * @param string $username
-     * @return static|null
+     * @return ActiveRecord|array
      */
-    public static function findByUsername($username)
+    public static function findByUsername($pair)
     {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        return static::find()->where($pair)->andWhere(['status' => self::STATUS_ACTIVE])->one();
     }
 
     /**

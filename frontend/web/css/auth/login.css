@@ -1,0 +1,175 @@
+.site-login{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.centerBlockForm{
+    width: 500px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 10px;
+    border: 2px solid #218100;
+    border-radius: 5px;
+    position: relative;
+
+}
+
+.titleBlock{
+    width: 100%;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    font-weight: 500;
+
+}
+
+.methodSelectionLogin{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    border-radius: 5px;
+    border: 1px solid green;
+}
+
+.methodSelectionLogin .active{
+    opacity: 1;
+}
+
+.labelEmailOrLogin{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    opacity: 0.5;
+    font-weight: 600;
+    font-size: 20px;
+    text-decoration: none;
+    border-right: 1px solid green;
+
+}
+
+.labelPhone{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    opacity: 0.5;
+    font-weight: 600;
+    font-size: 20px;
+    text-decoration: none;
+}
+/*-----end-------*/
+
+
+/* ---start--fields-------*/
+.blockFields{
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+.field-loginform-phone, .field-loginform-username, .field-loginform-password{
+    margin-top: 5px;
+    width: 100%;
+    position: relative;
+}
+
+.invalid-feedback{
+    height: 20px;
+    font-size: 12px;
+    display:  block;
+}
+
+#loginform-username, #loginform-password, #loginform-phone{
+    height: 50px;
+    font-size: 20px;
+}
+
+.usernameBlock, .phoneBlock, .passwordBlock{
+    position: relative;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* ----end---------*/
+
+#bigErrorMessage{
+    padding-left: 10px;
+    color: #de404f;
+    font-size: 17px;
+    width: 100%;
+}
+
+
+
+.form-group{
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.blockBtn button{
+    width: 100px;
+    height: 40px;
+    background: #0d6efd;
+    color: white;
+    font-weight: 500;
+    border-radius: 5px;
+    border: none;
+}
+
+.blockBtn button:hover{
+    box-shadow: 0 0 5px rgb(13, 110, 253);
+}
+
+
+.bottom_text_reg{
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+.blockServices{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.blockServices .title{
+    width: 100%;
+    height: 20px;
+    font-weight: 500;
+}
+
+.aServices{
+    width: 100%;
+    height: 60px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.blockServices .service{
+    width: 70px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #b6b6b6;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.blockServices .service svg{
+    width: 50px;
+    height: 50px;
+}

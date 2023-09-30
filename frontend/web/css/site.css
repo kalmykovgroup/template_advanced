@@ -101,3 +101,31 @@ a.desc:after {
 {
     text-decoration: none;
 }
+/*---start --- download*/
+
+#veilMainDownload{
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 10;
+    background: rgba(75, 75, 75, 0.31);
+}
+
+#veilMainDownload .downloadAnimate{
+    width: 150px;
+    height: 150px;
+    top: 50%;
+
+}
+#veilMainDownload .downloadAnimate object{
+    max-width: 90%;
+    max-height: 90%;
+}
+
+#veilMainDownload .textLoad{
+    color: #de404f;
+}
+/*---end --- download*/

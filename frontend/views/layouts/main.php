@@ -48,11 +48,11 @@ AppAsset::register($this);
         'items' => $menuItems,
     ]);
     if (Yii::$app->user->isGuest) {
-        echo Html::tag('div',Html::a('Login',['/site/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
+        echo Html::tag('div',Html::a('Login',['/auth/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
     } else {
         echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex'])
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+                'Logout (' . ($_SESSION['username'] ?? " " ) . ')',
                 ['class' => 'btn btn-link logout text-decoration-none']
             )
             . Html::endForm();
@@ -62,9 +62,18 @@ AppAsset::register($this);
 </header>
 
 <main role="main" class="flex-shrink-0">
+    <div id="veilMainDownload">
+        <div class="downloadAnimate">
+            <object class="arm_download_svg" type="image/svg+xml" data="/frontend/web/svg/auth/arm.svg" >  </object>
+            <div class="textLoad">
+                Загрузка
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+            'links' => $this->params['breadcrumbs'] ?? [],
         ]) ?>
         <?= Alert::widget() ?>
         <?= $content ?>
