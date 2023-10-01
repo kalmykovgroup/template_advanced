@@ -35,7 +35,7 @@ class LoginForm extends Model
             [['password'], 'required', 'message' => "Поле не может быть пустым!"] ,
             [['username', 'password', 'phone'], 'trim'],// обрезает пробелы вокруг
             [['username'], 'string', 'max' => 255],
-            ['password', 'string', 'min' => 6, 'message' => 'мин. 6 сим.'],
+            ['password', 'string', 'min' => Yii::$app->params['user.passwordMinLength'], 'message' => 'мин. '.Yii::$app->params['user.passwordMinLength'].' сим.'],
             ['phone',  function(){
                $this->phone = preg_replace('/[^0-9]/', '', $this->phone);
             }],

@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use Yii;
+use yii\base\Exception;
 use yii\base\Model;
 use common\models\User;
 
@@ -17,7 +18,7 @@ class PasswordResetRequestForm extends Model
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             ['email', 'trim'],
@@ -32,11 +33,12 @@ class PasswordResetRequestForm extends Model
     }
 
     /**
-     * Sends an email with a link, for resetting the password.
+     * Отправляет электронное письмо со ссылкой для сброса пароля.
      *
-     * @return bool whether the email was send
+     * @return bool whether the email was sent
+     * @throws Exception
      */
-    public function sendEmail()
+    public function sendEmail(): bool
     {
         /* @var $user User */
         $user = User::findOne([
@@ -44,18 +46,16 @@ class PasswordResetRequestForm extends Model
             'email' => $this->email,
         ]);
 
-        if (!$user) {
-            return false;
-        }
-        
-        if (!User::isPasswordResetTokenValid($user->password_reset_token)) {
-            $user->generatePasswordResetToken();
-            if (!$user->save()) {
+        if (!$user)  return false;
+
+        if (!User::isPasswordResetTokenValid($user->password_reset_token)) { //Если предыдущий токен уже не валиден
+            $user->generatePasswordResetToken();  //Создаем новый
+            if (!$user->save()) { //Если не получилось сохранить
                 return false;
             }
         }
 
-        return Yii::$app
+        return Yii::$app //Отправляем на почту токен восстановления
             ->mailer
             ->compose(
                 ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],

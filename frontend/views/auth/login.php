@@ -7,6 +7,7 @@
 use common\models\LoginForm;
 use frontend\assets\AuthAsset;
 use yii\bootstrap5\ActiveForm;
+use yii\helpers\Url;
 use yii\widgets\MaskedInput;
 
 $this->title = 'Login';
@@ -91,7 +92,12 @@ AuthAsset::register($this);
                 <button type="submit">Войти</button>
             </div>
         </div>
-        <div class="bottom_text_reg">Нет Аккаунта? пройдите &nbsp;<a href="#">Регистрацию</a></div>
+        <div class="bottom_text_reg">Нет Аккаунта? пройдите &nbsp;<a href="<?=Url::to(['auth/signup']);?>">Регистрацию</a></div>
+
+        <div class="recoverPassword">
+            <a href="<?=Url::to(['auth/request-password-reset'])?>">Забыл пароль</a>
+        </div>
+
 
         <?php ActiveForm::end(); ?>
 

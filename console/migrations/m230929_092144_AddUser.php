@@ -26,7 +26,6 @@ class m230929_092144_AddUser extends Migration
 
             $transaction = $connection->beginTransaction();
             $password_hash = Yii::$app->security->generatePasswordHash($password);
-            $password_reset_token = Yii::$app->security->generateRandomString(32);
             $auth_key = Yii::$app->security->generateRandomString(32);
             $access_token = Yii::$app->security->generateRandomString(32);
 
@@ -34,7 +33,6 @@ class m230929_092144_AddUser extends Migration
                 $connection->createCommand()->insert('user',
                     ['login'=>$login,
                         'password_hash'=>$password_hash,
-                        'password_reset_token'=>$password_reset_token,
                         'auth_key'=>$auth_key,
                         'access_token'=>$access_token,
                     ])->execute();

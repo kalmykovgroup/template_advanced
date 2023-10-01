@@ -1,5 +1,6 @@
 <?php
 
+use common\models\User;
 use yii\db\Migration;
 
 class m130524_201442_init extends Migration
@@ -17,16 +18,19 @@ class m130524_201442_init extends Migration
             'login' => $this->string(255)->Null(), //Имя, хранится здесь, что-бы не подгружить дополнительную таблицу с полной инфой
             'name' => $this->string(255)->Null(), //Имя, хранится здесь, что-бы не подгружить дополнительную таблицу с полной инфой
             'auth_key' => $this->string()->notNull(), //Сдесь хранится ключ, используемый для основанной на cookie аутентификации
-            'access_token' => $this->string()->notNull(), //Когда требуется аутентифицировать пользователя только по секретному токену (например в RESTful приложениях, не сохраняющих состояние между запросами).
+            'access_token' => $this->string()->notNull(), //Требуется только тогда, когда нужно аутентифицировать пользователя только по секретному токену (например в RESTful приложениях, не сохраняющих состояние между запросами).
             'password_hash' => $this->string()->notNull(), //Обычный захешованный пароль
-            'password_reset_token' => $this->string()->Null(), //Сдесь хранится пароль для сброса основного
-            'verification_token' => $this->string()->Null(), //Сдесь хранится токен верефикации, он нужен
+            'password_reset_token' => $this->string()->Null(), //Сдесь хранится ключ имеющий время работы, для сброса пароля (передаеться пользователю как ссылка для сброса)
+            'verification_token' => $this->string()->Null(), //Сдесь хранится токен верефикации, он нужен для подтверждения электронной почты
             'email' => $this->string()->Null(),
             'phone' => $this->string()->Null(),
-            'status' => $this->smallInteger()->Null()->defaultValue(10), //10 - Активный, удален, заблоктрован ...
+            'status' => $this->smallInteger()->Null()->defaultValue(User::STATUS_ACTIVE), //10 - Активный, удален, заблоктрован ...
+            'email_status' => "ENUM('0', '1')  NOT NULL DEFAULT '".User::EMAIL_INACTIVE."'",
+            'phone_status' => "ENUM('0', '1')  NOT NULL DEFAULT '".User::PHONE_INACTIVE."'",
             'created_at' => $this->timestamp()->defaultExpression('NOW()'),
             'updated_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')->append('ON UPDATE NOW()'),
         ],$tableOptions);
+
 
 
     }
