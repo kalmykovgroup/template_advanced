@@ -9,10 +9,6 @@ return [
         'cache' => [
             'class' => \yii\caching\FileCache::class,
         ],
-        'user' => [
-            'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
-        ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -27,8 +23,6 @@ return [
                 // раскомментируйте, если вы хотите кэшировать иерархию элементов RBAC
                 // 'cache' => 'cache',
             ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
+
     ],
 ];

@@ -6,14 +6,22 @@
 }
 
 .centerBlockForm{
-    width: 500px;
-    padding-left: 50px;
-    padding-right: 50px;
+    max-width: 500px;
+    width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
     padding-bottom: 10px;
     border: 2px solid #218100;
     border-radius: 5px;
     position: relative;
 
+}
+
+@media(min-width: 768px){
+    .centerBlockForm{
+        padding-left: 50px;
+        padding-right: 50px;
+    }
 }
 
 .titleBlock{

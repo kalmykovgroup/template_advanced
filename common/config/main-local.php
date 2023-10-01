@@ -4,7 +4,7 @@ return [
     'components' => [
         'db' => [
             'class' => \yii\db\Connection::class,
-            'dsn' => 'mysql:host=localhost;dbname=yii2advanced',
+            'dsn' => 'mysql:host=localhost;dbname=a0788973_kalmykov_group',
             'username' => 'root',
             'password' => '',
             'charset' => 'utf8',

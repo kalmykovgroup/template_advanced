@@ -14,16 +14,21 @@ class m130524_201442_init extends Migration
 
         $this->createTable('{{%user}}', [
             'id' => $this->primaryKey(),
-            'username' => $this->string()->notNull()->unique(),
-            'auth_key' => $this->string(32)->notNull(),
-            'password_hash' => $this->string()->notNull(),
-            'password_reset_token' => $this->string()->unique(),
-            'email' => $this->string()->notNull()->unique(),
+            'login' => $this->string(255)->Null(), //Имя, хранится здесь, что-бы не подгружить дополнительную таблицу с полной инфой
+            'name' => $this->string(255)->Null(), //Имя, хранится здесь, что-бы не подгружить дополнительную таблицу с полной инфой
+            'auth_key' => $this->string()->notNull(), //Сдесь хранится ключ, используемый для основанной на cookie аутентификации
+            'access_token' => $this->string()->notNull(), //Когда требуется аутентифицировать пользователя только по секретному токену (например в RESTful приложениях, не сохраняющих состояние между запросами).
+            'password_hash' => $this->string()->notNull(), //Обычный захешованный пароль
+            'password_reset_token' => $this->string()->Null(), //Сдесь хранится пароль для сброса основного
+            'verification_token' => $this->string()->Null(), //Сдесь хранится токен верефикации, он нужен
+            'email' => $this->string()->Null(),
+            'phone' => $this->string()->Null(),
+            'status' => $this->smallInteger()->Null()->defaultValue(10), //10 - Активный, удален, заблоктрован ...
+            'created_at' => $this->timestamp()->defaultExpression('NOW()'),
+            'updated_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')->append('ON UPDATE NOW()'),
+        ],$tableOptions);
 
-            'status' => $this->smallInteger()->notNull()->defaultValue(10),
-            'created_at' => $this->integer()->notNull(),
-            'updated_at' => $this->integer()->notNull(),
-        ], $tableOptions);
+
     }
 
     public function down()
