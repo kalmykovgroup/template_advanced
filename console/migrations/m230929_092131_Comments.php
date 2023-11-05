@@ -23,11 +23,8 @@ class m230929_092131_Comments extends Migration
             'user_id' => $this->integer()->notNull(),
             'text' => $this->text()->Null(),
             'created_at' => $this->timestamp()->defaultExpression('NOW()'),
-            'updated_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')->append('ON UPDATE NOW()'),
         ], $tableOptions);
 
-        //Связываем Address and Comments
-        $this->addForeignKey('fk-address-comment_id-comments-id', 'address', 'comment_id', 'comments', 'id', 'CASCADE', 'CASCADE');
 
     }
 

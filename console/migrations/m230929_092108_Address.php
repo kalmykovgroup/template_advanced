@@ -31,6 +31,8 @@ class m230929_092108_Address extends Migration
 
         //Связываем Address and User
         $this->addForeignKey('fk-address-user_id-user-id', 'address', 'user_id', 'user', 'id', 'CASCADE', 'CASCADE');
+        //Связываем Address and Comments
+        $this->addForeignKey('fk-address-comment_id-comments-id', 'address', 'comment_id', 'comments', 'id', 'CASCADE', 'CASCADE');
 
     }
 

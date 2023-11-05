@@ -18,11 +18,9 @@ class m231019_172120_auth extends Migration
             'user_id' => $this->integer()->notNull(), //Ссылка на пользователя
             'source' => $this->string()->notNull(),
             'source_id' => $this->string()->notNull(),
-            'created_at' => $this->timestamp()->defaultExpression('NOW()'),
-            'updated_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')->append('ON UPDATE NOW()'),
         ]);
 
-        //Связываем User and UserInformation
+        //Связываем auth and User
         $this->addForeignKey('fk-auth-user_id-user-id', 'auth', 'user_id', 'user', 'id', 'CASCADE', 'CASCADE');
 
     }

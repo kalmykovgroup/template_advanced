@@ -30,7 +30,7 @@ class m230929_084835_FullInfo extends Migration
             'gender' => "ENUM('female', 'male')", // female - женский.
             'updated_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')->append('ON UPDATE NOW()'),
         ], $tableOptions);
-        //Связываем User and UserInformation
+        //Связываем full_info and user
         $this->addForeignKey('fk-full_info-user_id-user-id', 'full_info', 'user_id', 'user', 'id', 'CASCADE', 'CASCADE');
 
     }
