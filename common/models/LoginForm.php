@@ -3,128 +3,128 @@
 namespace common\models;
 
 use Yii;
+use yii\base\Exception;
 use yii\base\Model;
+use yii\db\ActiveRecord;
 
 /**
- * LoginForm is the model behind the login form.
+ * LoginForm model
  *
- * @property-read User|null $user
- *
+ * @property-read User|null $_user
+ ** @property string $login
+ ** @property string $email
+ * @property string $phone
+ * @property string $password
+ * @property bool $rememberMe
+ * @property string $login_method
  */
+
+
 class LoginForm extends Model
 {
-    public  $username;
-    public  $phone;
-    public  $password;
+    public string $login = "";
+    public string $email = "";
+    public string $phone = "";
+    public string $password = "";
     public bool $rememberMe = true;
-    public string $login_method;
-    private $_user = false;
+    private null|User|ActiveRecord $_user = null;
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
-        return [
 
-            [['username', 'phone'], 'required','message' => "Поле не может быть пустым!",  'when' => function(){
-                if(empty($this->username) && empty($this->password)){
-                    $this->addErrors(['phone', 'username']);
-                }
-            }],// обрезает пробелы вокруг
-            [['password'], 'required', 'message' => "Поле не может быть пустым!"] ,
-            [['username', 'password', 'phone'], 'trim'],// обрезает пробелы вокруг
-            [['username'], 'string', 'max' => 255],
-            ['password', 'string', 'min' => Yii::$app->params['user.passwordMinLength'], 'message' => 'мин. '.Yii::$app->params['user.passwordMinLength'].' сим.'],
-            ['phone',  function(){
-               $this->phone = preg_replace('/[^0-9]/', '', $this->phone);
-            }],
-            ['phone', 'string', 'length' => [11, 20], 'message' => 'Не верный формат'],
+        //Добавляем общие правила валидации
+         return array_merge(
+            ValidateForm::emailRules(),
+            ValidateForm::phoneRules(),
+            ValidateForm::loginRules(),
+            ValidateForm::passwordRules(),
+
+        [
+
+            [['login', 'email', 'phone'], 'required' , 'message' => Yii::t('app', "{attribute} не может быть пустым!"), 'when' => function(){
+                return empty($this->login) && empty($this->phone) && empty($this->email);
+
+            }, 'whenClient' => "function (attribute, value) {
+                    return $('#loginform-email').val() == '' && $('#loginform-phone').val() == '' && $('#loginform-login').val() == '' ;
+                }"],
 
             ['rememberMe', 'boolean'],
-
-            ['username', 'isCheckPairUsernamePhone', 'skipOnEmpty' => false, 'skipOnError' => false, ],
-
             ['password', 'validatePassword'],
-        ];
+
+        ]);
+
     }
 
-    public function isCheckPairUsernamePhone($attribute): void
+
+    /**
+     * @throws Exception
+     */
+    public function isCheckFieldsLoginEmailPhone(): void
     {
          if(!empty($this->phone)){ //Если не пустое поле телефон
-            $this->login_method = 'phone';
-            if(!$this->getUser()) {
-                $this->addError('phone', 'Пользователь не найден!');
+            if(!$this->getUser('phone', $this->phone)) {
+                $this->addError('phone', Yii::t('app', 'Пользователь '.$this->phone.' не найден!'));
             }
         }
-        else{
+        else if(!empty($this->email)){
             $validator = new \yii\validators\EmailValidator();
+            $this->email =  mb_strtolower($this->email); //Приведем к нижнему реестру
 
-            if ($validator->validate($this->username, $error)) {  // и проверяем что данные являются праельным эмейл адресом
-                $this->login_method = 'email'; //Пробуем найти по Емайлу
+            if ($validator->validate($this->email, $error)) {  // и проверяем что данные являются праельным эмейл адресом
+                if(!$this->getUser('email', $this->email)) {
+                    $this->addError('email', Yii::t('app', 'Пользователь '.$this->email.' не найден!'));
+                }
             }else{
-                $this->login_method = 'login'; //Пробуем найти по логину
-            }
-            if(!$this->getUser()){
-                $this->addError('username', 'Пользователь не найден!');
+                $this->addError('email', Yii::t('app', 'Не являеться правильным Email адресом'));
             }
 
+        }else{
+            throw new \InvalidArgumentException(Yii::t('app', "Аргументы пусты!"));
         }
 
     }
 
-    public function isEmail(): bool
-    {
-        //создаем экземпляр модели
 
-        return false;
-    }
-
-    public function validatePassword($attribute, $params): void
+    /**
+     * @throws Exception
+     */
+    public function validatePassword($attribute): void
     {
+        $this->isCheckFieldsLoginEmailPhone();
         if (!$this->hasErrors()) {
-            $user = $this->getUser();
-
-            if (!$user || !$user->validatePassword($this->password)) {
+            if (!$this->_user->validatePassword($this->password)) {
                 $this->addError($attribute, 'Пароль не подходит');
             }
         }
     }
 
 
+    /**
+     */
     public function login(): bool
     {
         if ($this->validate()) {
-            $session = Yii::$app->session;
-            $session->open();
-
-            if($this->login_method == 'phone'){
-                $session->set('username', $this->getUser()->phone);
-            }else if($this->login_method == 'email'){
-                $session->set('username', $this->getUser()->email);
-            }else{
-                $session->set('username', $this->getUser()->login);
-            }
-
-
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
+            return Yii::$app->user->login($this->_user, $this->rememberMe ? 3600*24*30 : 0);
         }
         return false;
     }
 
 
-    public function getUser()
+    /**
+     * @throws Exception
+     */
+    public function getUser($field, $value): User|array|ActiveRecord|null
     {
         if (!$this->_user) {
-            if($this->login_method == 'phone'){
-                $this->_user = User::findByUsername(['phone' => $this->phone]);
-            }else if($this->login_method == 'email'){
-                $this->_user = User::findByUsername(['email' => $this->username]);
-            }else{
-                $this->_user = User::findByUsername(['login' => $this->username]);
-            }
+             $this->_user = User::findByUsername([$field => $value]);
         }
 
+        $this->_user?->checkStatusUser();
+
         return $this->_user;
+
     }
 }

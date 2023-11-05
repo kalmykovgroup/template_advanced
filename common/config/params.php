@@ -1,9 +1,9 @@
 <?php
 return [
-    'adminEmail' => 'admin@example.com',
-    'supportEmail' => 'support@example.com',
-    'senderEmail' => 'noreply@example.com',
-    'senderName' => 'Example.com mailer',
+    'adminEmail' => 'vanyakalmykov2015@mail.ru',
+    'supportEmail' => 'vanyakalmykov2015@mail.ru',
+    'senderEmail' => 'vanyakalmykov2015@mail.ru',
+    'senderName' => 'vanyakalmykov2015@mail.ru',
     'user.passwordResetTokenExpire' => 3600, //Время жизни токена сброса пароля
-    'user.passwordMinLength' => 8,
+
 ];

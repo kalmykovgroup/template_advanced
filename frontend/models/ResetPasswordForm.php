@@ -31,11 +31,12 @@ class ResetPasswordForm extends Model
     public function __construct($token, array $config = [])
     {
         if (empty($token) || !is_string($token)) {
-            throw new InvalidArgumentException('Токен сброса пароля не может быть пустым.');
+            Yii::error('Токен сброса пароля не может быть пустым!');
+            throw new InvalidArgumentException();
         }
         $this->_user = User::findByPasswordResetToken($token);
         if (!$this->_user) {
-            throw new InvalidArgumentException('Неверный токен сброса пароля.');
+            throw new InvalidArgumentException();
         }
         parent::__construct($config);
     }
@@ -46,8 +47,12 @@ class ResetPasswordForm extends Model
     public function rules(): array
     {
         return [
-            ['password', 'required'],
-            ['password', 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
+            ['password', 'trim'],
+            [['password'], 'required', 'message' => "{attribute} не может быть пустым!"] ,
+            ['password', 'string', 'min' => 6, 'message' => 'мин. 6 симв.'],
+
+            ['password', 'match', 'pattern' =>  '/^(?=.*[a-z])/','message' => "Пароль должен содержать буквы"],
+            ['password', 'match', 'pattern' =>  '/^(?=.*[0-9])/','message' => "Пароль должен содержать цыфры"],
         ];
     }
 

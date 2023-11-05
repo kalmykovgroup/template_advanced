@@ -19,10 +19,10 @@ class m230929_092144_AddUser extends Migration
         $query = new \yii\db\Query();
 
         foreach([
-                    'admin'=> '333333',
-                    'manager'=> '222222',
-                    'tester'=> '111111',
-                ] as $login => $password){
+                    'admin@mail.ru'=> 'admin1',
+                    'manager@mail.ru'=> 'admin1',
+                    'tester@mail.ru'=> 'admin1',
+                ] as $email => $password){
 
             $transaction = $connection->beginTransaction();
             $password_hash = Yii::$app->security->generatePasswordHash($password);
@@ -31,12 +31,12 @@ class m230929_092144_AddUser extends Migration
 
             try {
                 $connection->createCommand()->insert('user',
-                    ['login'=>$login,
+                    ['email'=>$email,
                         'password_hash'=>$password_hash,
                         'auth_key'=>$auth_key,
                         'access_token'=>$access_token,
                     ])->execute();
-                $connection->createCommand()->insert('full_info', ['user_id'=>($query->select('id')->from('user')->where(['login'=>$login]))])->execute();
+                $connection->createCommand()->insert('full_info', ['user_id'=>($query->select('id')->from('user')->where(['email'=>$email]))])->execute();
                 $transaction->commit();
             } catch (\Exception|\Throwable $e) {
                 $transaction->rollBack();
@@ -44,9 +44,9 @@ class m230929_092144_AddUser extends Migration
         }
 
         $auth = Yii::$app->authManager;
-        $auth->assign($auth->getRole('admin'), User::findOne(['login' => 'admin'])->id);
-        $auth->assign($auth->getRole('manager'), User::findOne(['login' => 'manager'])->id);
-        $auth->assign($auth->getRole('user'), User::findOne(['login' => 'tester'])->id);
+        $auth->assign($auth->getRole('admin'), User::findOne(['email' => 'admin@mail.ru'])->id);
+        $auth->assign($auth->getRole('manager'), User::findOne(['email' => 'manager@mail.ru'])->id);
+        $auth->assign($auth->getRole('user'), User::findOne(['email' => 'tester@mail.ru'])->id);
     }
 
     /**

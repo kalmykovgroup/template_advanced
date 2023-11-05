@@ -4,13 +4,17 @@ namespace common\models;
 
 use Yii;
 use yii\base\Exception;
+use yii\base\InvalidArgumentException;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\BaseActiveRecord;
 use yii\web\IdentityInterface;
 
 /**
  * User model
+ *
  *
  * @property integer $id
  * @property string $name
@@ -28,16 +32,19 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * @property Auth $auth
  */
-class User extends ActiveRecord implements IdentityInterface
+class User extends ActiveRecord  implements IdentityInterface
 {
-    const STATUS_DELETED = 0;
-    const STATUS_INACTIVE = 9;
+    const STATUS_DELETED = 0; //Пользователь был удален
+    const STATUS_BLOCKED = 8; //Пользователь заблокирован кретически, за нарушения правил сервиса
+    const STATUS_INACTIVE = 9; //Пользователь заблокирован но не кретически
     const STATUS_ACTIVE = 10;
     const EMAIL_INACTIVE = 0;
     const EMAIL_ACTIVE = 1;
     const PHONE_INACTIVE = 0;
     const PHONE_ACTIVE = 1;
+
 
 
     /**
@@ -51,43 +58,31 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
+
     public function behaviors(): array
     {
         return [
-            TimestampBehavior::class,
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function rules(): array
-    {
-        return [
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-
-            ['email_status', 'default', 'value' => self::EMAIL_INACTIVE],
-            ['email_status', 'in', 'range' => [self::EMAIL_INACTIVE, self::EMAIL_ACTIVE]],
-
-            ['phone_status', 'default', 'value' => self::PHONE_INACTIVE],
-            ['phone_status', 'in', 'range' => [self::PHONE_INACTIVE, self::PHONE_ACTIVE]],
+            [
+                'class' => TimestampBehavior::class,
+                'attributes' => [
+                    BaseActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    BaseActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                // если вместо метки времени UNIX используется datetime:
+                // 'value' => new Expression('NOW()'),
+            ],
         ];
     }
 
 
-    public function fields(): array
-    {
-        $fields = parent::fields();
 
-        // удаляем небезопасные поля
-        unset($fields['auth_key'], $fields['password_hash'], $fields['access_token']);
-        return $fields;
+    public function getAuth(): ActiveQuery
+    {
+        return $this->hasOne(Auth::class, ['user_id' => 'id']);
     }
-
-    public function getRole()
+    public function getFullInfo(): ActiveQuery
     {
-        return array_values(Yii::$app->authManager->getRolesByUser($this->id))[0];
+        return $this->hasOne(FullInfo::class, ['user_id' => 'id']);
     }
 
     /**
@@ -105,9 +100,64 @@ class User extends ActiveRecord implements IdentityInterface
         return false;
     }
 
+
+
     /**
      * {@inheritdoc}
      */
+    public function rules(): array
+    {
+        return [
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+
+            ['email_status', 'default', 'value' => self::EMAIL_INACTIVE],
+            ['email_status', 'in', 'range' => [self::EMAIL_INACTIVE, self::EMAIL_ACTIVE]],
+
+            ['phone_status', 'default', 'value' => self::PHONE_INACTIVE],
+            ['phone_status', 'in', 'range' => [self::PHONE_INACTIVE, self::PHONE_ACTIVE]],
+        ];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function checkStatusUser(): bool
+    {
+        if(!empty($this->status)){
+                if($this->status == User::STATUS_BLOCKED){
+                    throw new Exception("Пользователь заблокирован за нарушение правил сервиса!", 423);
+                }else if($this->status == User::STATUS_INACTIVE){
+                    throw new Exception("Пользователь не активный! Обратитесь к администратору", 302);
+                }
+                else if($this->status == User::STATUS_DELETED){
+                    throw new Exception("Пользователь был удален!", 410);
+                }
+           return true;
+        }
+        Yii::error( "Ошибка, возможно вызов функции у пустого юзера или проблема со статусом: " . $this->id);
+        return false;
+
+    }
+
+
+    public function fields(): array
+    {
+        $fields = parent::fields();
+
+        // удаляем небезопасные поля
+        unset($fields['auth_key'], $fields['password_hash'], $fields['access_token']);
+        return $fields;
+    }
+
+    public function getRole()
+    {
+        return array_values(Yii::$app->authManager->getRolesByUser($this->id))[0];
+    }
+
+
+
+
     public static function findIdentity($id): User|IdentityInterface|null
     {
         return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
@@ -138,7 +188,7 @@ class User extends ActiveRecord implements IdentityInterface
      * @param $pair
      * @return ActiveRecord|array
      */
-    public static function findByUsername($pair): array|ActiveRecord
+    public static function findByUsername($pair): null|ActiveRecord
     {
         return static::find()->where($pair)->andWhere(['status' => self::STATUS_ACTIVE])->one();
     }
@@ -152,14 +202,31 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findByPasswordResetToken(string $token): null|static
     {
         if (!static::isPasswordResetTokenValid($token)) {
-            return null;
+            throw new InvalidArgumentException('Истекло время жизни токена!');
         }
 
         return static::findOne([
             'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
         ]);
     }
+    /**
+     * Определяет, действителен ли токен сброса пароля
+     *
+     * @param string $token password reset token
+     * @return bool
+     */
+    public static function isPasswordResetTokenValid(string $token): bool
+    {
+        if (empty($token)){
+            Yii::error('Токен сброса пароля не может быть пустым!');
+            throw new InvalidArgumentException();
+        }
+
+        $timestamp = (int) substr($token, strrpos($token, '_') + 1); //Выризаем строку с временем жизни токена
+        $expire = Yii::$app->params['user.passwordResetTokenExpire']; //Берем общее время жизни токена
+        return $timestamp + $expire >= time(); //Проверяем не закончилось ли время
+    }
+
 
     /**
      * Находит пользователя по подтверждающему электронному токену
@@ -175,20 +242,6 @@ class User extends ActiveRecord implements IdentityInterface
         ]);
     }
 
-    /**
-     * Определяет, действителен ли токен сброса пароля
-     *
-     * @param string $token password reset token
-     * @return bool
-     */
-    public static function isPasswordResetTokenValid(string $token): bool
-    {
-        if (empty($token))   return false;
-
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1); //Выризаем строку с временем жизни токена
-        $expire = Yii::$app->params['user.passwordResetTokenExpire']; //Берем общее время жизни токена
-        return $timestamp + $expire >= time(); //Проверяем не закончилось ли время
-    }
 
     /**
      * {@inheritdoc}

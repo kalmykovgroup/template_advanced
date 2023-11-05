@@ -3,34 +3,24 @@
 namespace frontend\controllers;
 
 use Yii;
-use yii\db\Exception;
-use yii\web\Controller;
-use yii\filters\VerbFilter;
+use yii\console\Controller;
 use yii\filters\AccessControl;
-use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 
-/**
- * Site controller
- */
-class SiteController extends Controller
+class UserController extends Controller
 {
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup'],
+                'only' => ['account'],
                 'rules' => [
                     [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['logout'],
+                        'actions' => ['account'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -39,13 +29,13 @@ class SiteController extends Controller
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    'logout' => ['post'],
+                    //'logout' => ['post'],
                 ],
             ],
         ];
     }
 
-    public function actions()
+    public function actions(): array
     {
         return [
             'error' => [
@@ -64,12 +54,10 @@ class SiteController extends Controller
         return null;
     }
 
-    public function actionIndex(): string
+    public function actionAccount(): string
     {
-        return $this->render('index');
+        $user = Yii::$app->getUser();
+        return $this->render('account', compact('user'));
     }
-
-
-
 
 }

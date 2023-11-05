@@ -2,51 +2,63 @@
 
 /** @var yii\web\View $this */
 
-$this->title = 'My Yii Application';
+$this->title = 'Строй-Хоз-Маг';
 ?>
-<div class="site-index">
-    <div class="p-5 mb-4 bg-transparent rounded-3">
-        <div class="container-fluid py-5 text-center">
-            <h1 class="display-4">Congratulations!</h1>
-            <p class="fs-5 fw-light">You have successfully created your Yii-powered application.</p>
-            <p><a class="btn btn-lg btn-success" href="https://www.yiiframework.com">Get started with Yii</a></p>
-        </div>
-    </div>
+<style>
 
-    <div class="body-content">
+    .line{
+        width: 100%;
+        height: 5px;
+        background: #218100;
+        margin-bottom: 10px;
+    }
 
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+    .categories{
+        width: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .category{
+        color: black;
+        height: 30px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 4px;
+        font-weight: 500;
+        border: 1px solid #9f9f9f;
+        box-shadow: 0 0 5px rgb(33, 129, 0);
+        background: #ffffff;
+    }
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+    .category:hover{
+        background: #ddffdd;
+    }
 
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+</style>
+<div class="line"></div>
+<div class="container">
+    <div class="site-index">
+        <div class="body-content">
 
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
+            <div class="categories">
+                    <a href="#" class="category category_tool">Инструмент</a>
+                    <a href="#" class="category category_chemistry">Бытовая химия</a>
+                    <a href="#" class="category category_wash">Для стирки</a>
+                    <a href="#" class="category category_interior">Предметы интерьера</a>
+                    <a href="#" class="category category_tool">Услуги мастера</a>
+                    <a href="#" class="category category_tool">Сантехника</a>
+                    <a href="#" class="category category_tool">Электрика</a>
+                    <a href="#" class="category category_tool">Краски</a>
+                    <a href="#" class="category category_tool">Для детей</a>
             </div>
         </div>
 
     </div>
 </div>
+
